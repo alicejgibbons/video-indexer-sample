@@ -2,14 +2,21 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MediaSample.MediaPage">
-  <ScrollView>
-    <StackLayout Spacing="10" Padding="10">
-      <!--<Button x:Name="takePhoto" Text="Take Photo"/>
-      <Button x:Name="pickPhoto" Text="Pick Photo"/>-->
-      <Button x:Name="takeVideo" Text="Take Video"/>
-      <Button x:Name="pickVideo" Text="Pick Video"/>
-
-      <Image x:Name="image"/>
-    </StackLayout>
-  </ScrollView>
+	<ScrollView>
+		<StackLayout Spacing="10" Padding="10">
+			<StackLayout Orientation="Vertical">
+				<Label Text="KEY"></Label>
+				<Entry x:Name="apiKey" Text="- APIM API KEY -"></Entry>
+			</StackLayout>
+			<StackLayout Orientation="Vertical">
+				<Label Text="CS"></Label>
+				<Entry x:Name="storageCS" Text="- AZURE STORAGE CS -"></Entry>
+			</StackLayout>
+			<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+				<Button x:Name="takeVideo" Text="Take Video"/>
+				<Button x:Name="pickVideo" Text="Pick Video"/>
+			</StackLayout>
+			<Label x:Name="statusLable"></Label>
+		</StackLayout>
+	</ScrollView>
 </ContentPage>

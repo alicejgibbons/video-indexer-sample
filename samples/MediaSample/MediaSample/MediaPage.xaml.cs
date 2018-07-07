@@ -1,115 +1,68 @@
 ﻿using Plugin.Media;
-using Plugin.Media.Abstractions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Diagnostics;
 using System.Threading.Tasks;
+using Plugin.Media.Abstractions;
 using Xamarin.Forms;
 
 namespace MediaSample
 {
-  public partial class MediaPage : ContentPage
-  {
-    public MediaPage()
-    {
-      InitializeComponent();
+	public partial class MediaPage : ContentPage
+	{
+		private readonly IVideoIndexerClient client;
+		public MediaPage(IVideoIndexerClient client)
+		{
+			this.client = client;
+			InitializeComponent();
 
-      takePhoto.Clicked += async (sender, args) =>
-      {
+			takeVideo.Clicked += async (sender, args) =>
+			{
+				if (!CrossMedia.Current.IsCameraAvailable || !CrossMedia.Current.IsTakeVideoSupported)
+				{
+					DisplayAlert("No Camera", ":( No camera avaialble.", "OK");
+					return;
+				}
 
-        if (!CrossMedia.Current.IsCameraAvailable || !CrossMedia.Current.IsTakePhotoSupported)
-        {
-          DisplayAlert("No Camera", ":( No camera avaialble.", "OK");
-          return;
-        }
+				var file = await CrossMedia.Current.TakeVideoAsync(new StoreVideoOptions
+				{
+					Quality = VideoQuality.Low,
+					DesiredLength = TimeSpan.FromHours(1d).Subtract(TimeSpan.FromSeconds(1d)),
+					DefaultCamera = CameraDevice.Rear,
+				    Name = $"{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}-{DateTime.Now.Hour}-{DateTime.Now.Minute}-{DateTime.Now.Second}.mp4",
+					Directory = "DefaultVideos",
+				});
 
-        var file = await CrossMedia.Current.TakePhotoAsync(new Plugin.Media.Abstractions.StoreCameraMediaOptions
-        {
-			Directory = "Test",
-			SaveToAlbum = true,
-			CompressionQuality = 75,
-			CustomPhotoSize = 50,
-			PhotoSize = PhotoSize.MaxWidthHeight,
-			MaxWidthHeight = 2000,
-            DefaultCamera = CameraDevice.Front
-		});
+				if (file == null)
+				{
+					return;
+				}
 
-        if (file == null)
-          return;
+				var path = file.Path;
+				file.Dispose();
 
-        DisplayAlert("File Location", file.Path, "OK");
+				await client.UploadAsync(path, apiKey.Text,storageCS.Text, status => { statusLable.Text = status; });
+			};
 
-        image.Source = ImageSource.FromStream(() =>
-        {
-          var stream = file.GetStream();
-          file.Dispose();
-          return stream;
-        });
-      };
+			pickVideo.Clicked += async (sender, args) =>
+			{
+				if (!CrossMedia.Current.IsPickVideoSupported)
+				{
+					DisplayAlert("Videos Not Supported", ":( Permission not granted to videos.", "OK");
+					return;
+				}
+				var file = await CrossMedia.Current.PickVideoAsync();
 
-      pickPhoto.Clicked += async (sender, args) =>
-      {
-        if (!CrossMedia.Current.IsPickPhotoSupported)
-        {
-          DisplayAlert("Photos Not Supported", ":( Permission not granted to photos.", "OK");
-          return;
-        }
-         var file = await Plugin.Media.CrossMedia.Current.PickPhotoAsync(new Plugin.Media.Abstractions.PickMediaOptions
-                      {
-                          PhotoSize =  Plugin.Media.Abstractions.PhotoSize.Medium,
-                    
-                      });
+				if (file == null)
+				{
+					return;
+				}
 
-
-        if (file == null)
-          return;
-
-        image.Source = ImageSource.FromStream(() =>
-        {
-          var stream = file.GetStream();
-          file.Dispose();
-          return stream;
-        });
-      };
-
-      takeVideo.Clicked += async (sender, args) =>
-      {
-        if (!CrossMedia.Current.IsCameraAvailable || !CrossMedia.Current.IsTakeVideoSupported)
-        {
-          DisplayAlert("No Camera", ":( No camera avaialble.", "OK");
-          return;
-        }
-
-        var file = await CrossMedia.Current.TakeVideoAsync(new Plugin.Media.Abstractions.StoreVideoOptions
-        {
-          Name = "video.mp4",
-          Directory = "DefaultVideos",
-        });
-
-        if (file == null)
-          return;
-
-        DisplayAlert("Video Recorded", "Location: " + file.Path, "OK");
-
-        file.Dispose();
-      };
-
-      pickVideo.Clicked += async (sender, args) =>
-      {
-        if (!CrossMedia.Current.IsPickVideoSupported)
-        {
-          DisplayAlert("Videos Not Supported", ":( Permission not granted to videos.", "OK");
-          return;
-        }
-        var file = await CrossMedia.Current.PickVideoAsync();
-
-        if (file == null)
-          return;
-
-        DisplayAlert("Video Selected", "Location: " + file.Path, "OK");
-        file.Dispose();
-      };
-    }
-  }
+				var path = file.Path;
+				file.Dispose();
+				
+				await client.UploadAsync(path, apiKey.Text, storageCS.Text, status => { statusLable.Text = status; });
+			};
+		}
+	}
 }

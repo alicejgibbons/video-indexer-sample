@@ -12,6 +12,10 @@
 				<Label Text="CS"></Label>
 				<Entry x:Name="storageCS" Text="- AZURE STORAGE CS -"></Entry>
 			</StackLayout>
+			<StackLayout Orientation="Vertical">
+				<Label Text="VI Account Name"></Label>
+				<Entry x:Name="viAccountName" Text="- AZURE STORAGE CS -"></Entry>
+			</StackLayout>
 			<StackLayout Orientation="Horizontal" HorizontalOptions="Center">
 				<Button x:Name="takeVideo" Text="Take Video"/>
 				<Button x:Name="pickVideo" Text="Pick Video"/>

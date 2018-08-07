@@ -7,7 +7,7 @@ namespace MediaSample
 {
 	public interface IVideoIndexerClient
 	{
-		Task UploadAsync(string path, string apiKey, string storageConnectionString, Action<string> status);
+		Task UploadAsync(string path, string apiKey, string storageConnectionString, string viAccountName, Action<string> status);
 	}
 	public class App : Application
 	{

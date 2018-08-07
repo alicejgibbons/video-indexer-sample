@@ -47,7 +47,7 @@ namespace MediaSample.Droid
 
 	public class AndroidVideoIndexerClient : IVideoIndexerClient
 	{
-		public async Task UploadAsync(string path, string apiKey, string storageConnectionString, Action<string> status)
+		public async Task UploadAsync(string path, string apiKey, string storageConnectionString, string viAccountName, Action<string> status)
 		{
 			var apiUrl = "https://api.videoindexer.ai";
 			var location = "westus2";
@@ -73,7 +73,7 @@ namespace MediaSample.Droid
 			var json = await result.Content.ReadAsStringAsync();
 			var accounts = JsonConvert.DeserializeObject<AccountContractSlim[]>(json);
 			// take the relevant account, here we simply take the first
-			var accountInfo = accounts.First(a => a.AccountType.ToLower() == "paid");
+			var accountInfo = accounts.First(a => a.Name.ToLower() == viAccountName);
 
 			// we will use the access token from here on, no need for the apim key
 			client.DefaultRequestHeaders.Remove("Ocp-Apim-Subscription-Key");

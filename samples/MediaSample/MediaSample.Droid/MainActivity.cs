@@ -83,7 +83,9 @@ namespace MediaSample.Droid
 
 			var account = CloudStorageAccount.Parse(storageConnectionString);
 			var blobClient = account.CreateCloudBlobClient();
+
 			var blobContainer = blobClient.GetContainerReference("uploads");
+			await blobContainer.CreateIfNotExistsAsync();
 
 			var destBlob = blobContainer.GetBlockBlobReference(Path.GetFileName(path));
 			await destBlob.DeleteIfExistsAsync();

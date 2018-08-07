@@ -41,7 +41,7 @@ namespace MediaSample
 				var path = file.Path;
 				file.Dispose();
 
-				await client.UploadAsync(path, apiKey.Text,storageCS.Text, status => { statusLable.Text = status; });
+				await client.UploadAsync(path, apiKey.Text,storageCS.Text, viAccountName.Text, status => { statusLable.Text = status; });
 			};
 
 			pickVideo.Clicked += async (sender, args) =>
@@ -61,7 +61,7 @@ namespace MediaSample
 				var path = file.Path;
 				file.Dispose();
 				
-				await client.UploadAsync(path, apiKey.Text, storageCS.Text, status => { statusLable.Text = status; });
+				await client.UploadAsync(path, apiKey.Text, storageCS.Text, viAccountName.Text, status => { statusLable.Text = status; });
 			};
 		}
 	}

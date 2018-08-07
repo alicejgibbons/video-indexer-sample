@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" android:installLocation="auto" package="com.azure.video.indexer.sample" android:versionCode="1" android:versionName="1">
 	<uses-sdk android:minSdkVersion="15" android:targetSdkVersion="27" />
 	<application android:label="Azure Video Indexer Sample" android:icon="@drawable/icon">
-		<provider android:name="android.support.v4.content.FileProvider" android:authorities="com.plugin.mediatest.fileprovider" android:exported="false" android:grantUriPermissions="true">
+		<provider android:name="android.support.v4.content.FileProvider" android:authorities="com.azure.video.indexer.sample.fileprovider" android:exported="false" android:grantUriPermissions="true">
 			<meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths"></meta-data>
 		</provider>
 	</application>

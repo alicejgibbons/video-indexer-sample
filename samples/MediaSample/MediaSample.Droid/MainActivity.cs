@@ -102,7 +102,7 @@ namespace MediaSample.Droid
 			var context = new SingleTransferContext();
 			context.ProgressHandler = new Progress<TransferStatus>((progress) =>
 			{
-				status($"{Path.GetFileName(path)} {Math.Round(progress.BytesTransferred / length * 100d,2)}% uploaded");
+				status($"{Path.GetFileName(path)} {Math.Round(progress.BytesTransferred / length * 100d, 2)}% uploaded");
 			});
 
 			// Upload a local blob
@@ -161,17 +161,28 @@ namespace MediaSample.Droid
 
 				var videoGetIndexResult = await videoGetIndexResultContent.ReadAsStringAsync();
 
-				var processingState = ((JValue)JsonConvert.DeserializeObject<dynamic>(videoGetIndexResult)["state"]).Value.ToString();
-				var processingProgress = ((JValue)JsonConvert.DeserializeObject<dynamic>(videoGetIndexResult)["processingProgress"])?.Value.ToString();
+				var deserializeObject = JsonConvert.DeserializeObject<JObject>(videoGetIndexResult);
+				var video = deserializeObject["videos"].First();
 
-				status($"State:{processingState} {processingProgress}");
+				var processingState = ((JValue)video["state"]).Value.ToString();
+				var processingProgress = ((JValue)video["processingProgress"])?.Value.ToString();
 
-				// job is finished
-				if (processingState != "Uploaded" && processingState != "Processing")
+				var failureMessage = ((JValue)video["failureMessage"])?.Value.ToString();
+				var failureCode = ((JValue)video["failureCode"])?.Value.ToString();
+
+				if (string.IsNullOrWhiteSpace(failureMessage))
 				{
-					//status($"Full JSON:{videoGetIndexResult}");
-					break;
+					status($"State:{processingState} {processingProgress}");
+
+					// job is finished
+					if (processingState != "Uploaded" && processingState != "Processing")
+					{
+						//status($"Full JSON:{videoGetIndexResult}");
+						break;
+					}
 				}
+				else
+					status($"State:{processingState} {failureCode}:{failureMessage}");
 			}
 
 			// search for the video
@@ -248,5 +259,124 @@ namespace MediaSample.Droid
 			public string AccessToken { get; set; }
 		}
 	}
+
+
+
+	public class Rootobject
+	{
+		public string accountId { get; set; }
+		public string id { get; set; }
+		public string partition { get; set; }
+		public string name { get; set; }
+		public object description { get; set; }
+		public string userName { get; set; }
+		public DateTime created { get; set; }
+		public string privacyMode { get; set; }
+		public string state { get; set; }
+		public bool isOwned { get; set; }
+		public bool isEditable { get; set; }
+		public bool isBase { get; set; }
+		public int durationInSeconds { get; set; }
+		public Summarizedinsights summarizedInsights { get; set; }
+		public Video[] videos { get; set; }
+		public Videosrange[] videosRanges { get; set; }
+	}
+
+	public class Summarizedinsights
+	{
+		public string name { get; set; }
+		public string id { get; set; }
+		public string privacyMode { get; set; }
+		public Duration duration { get; set; }
+		public string thumbnailVideoId { get; set; }
+		public string thumbnailId { get; set; }
+		public object[] faces { get; set; }
+		public object[] keywords { get; set; }
+		public object[] sentiments { get; set; }
+		public object[] emotions { get; set; }
+		public object[] audioEffects { get; set; }
+		public object[] labels { get; set; }
+		public object[] brands { get; set; }
+		public Statistics statistics { get; set; }
+	}
+
+	public class Duration
+	{
+		public string time { get; set; }
+		public int seconds { get; set; }
+	}
+
+	public class Statistics
+	{
+		public int correspondenceCount { get; set; }
+		public Speakertalktolistenratio speakerTalkToListenRatio { get; set; }
+		public Speakerlongestmonolog speakerLongestMonolog { get; set; }
+		public Speakernumberoffragments speakerNumberOfFragments { get; set; }
+		public Speakerwordcount speakerWordCount { get; set; }
+	}
+
+	public class Speakertalktolistenratio
+	{
+	}
+
+	public class Speakerlongestmonolog
+	{
+	}
+
+	public class Speakernumberoffragments
+	{
+	}
+
+	public class Speakerwordcount
+	{
+	}
+
+	public class Video
+	{
+		public string accountId { get; set; }
+		public string id { get; set; }
+		public string state { get; set; }
+		public string moderationState { get; set; }
+		public string reviewState { get; set; }
+		public string privacyMode { get; set; }
+		public string processingProgress { get; set; }
+		public string failureCode { get; set; }
+		public string failureMessage { get; set; }
+		public object externalId { get; set; }
+		public object externalUrl { get; set; }
+		public object metadata { get; set; }
+		public Insights insights { get; set; }
+		public string thumbnailId { get; set; }
+		public object publishedUrl { get; set; }
+		public object publishedProxyUrl { get; set; }
+		public string viewToken { get; set; }
+		public bool detectSourceLanguage { get; set; }
+		public string sourceLanguage { get; set; }
+		public string language { get; set; }
+		public string indexingPreset { get; set; }
+		public string linguisticModelId { get; set; }
+		public bool isAdult { get; set; }
+	}
+
+	public class Insights
+	{
+		public string version { get; set; }
+		public string sourceLanguage { get; set; }
+		public string language { get; set; }
+	}
+
+	public class Videosrange
+	{
+		public string videoId { get; set; }
+		public Range range { get; set; }
+	}
+
+	public class Range
+	{
+		public string start { get; set; }
+		public string end { get; set; }
+	}
+
+
 }
 
